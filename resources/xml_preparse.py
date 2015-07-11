@@ -4,13 +4,13 @@
 
 import xml.etree.ElementTree as ET
 from nltk.corpus import stopwords
-from nltk.stem.lancaster import LancasterStemmer
+from nltk.stem.porter import PorterStemmer 
 from nltk.tokenize import RegexpTokenizer
 
 if __name__ == '__main__':
     tree = ET.parse("ESV_processed.xml")
     bibleRoot = tree.getroot()
-    st = LancasterStemmer()
+    st = PorterStemmer()
     tokenizer = RegexpTokenizer(r'\w+')
    
     for book in bibleRoot:

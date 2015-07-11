@@ -14,14 +14,18 @@ if __name__ == '__main__':
     outFile = sys.argv[2]
 
     tree = ET.parse(inFile)
-    bible = tree.getroot()
+    bibleRoot = tree.getroot()
    
-    corpus = "" 
-    
-    for book in bible:
+    bible = dict()
+    for book in bibleRoot:
+        bookDict = dict()
         for chapter in book:
+            corpus = ""
             for verse in chapter: 
                 corpus += verse.text + " "
-                
+
+            bookDict[chapter.get("n")] = corpus
+        bible[book.get("n")] = bookDict
+
     with open(outFile, "w") as outputfd: 
-        outputfd.write(corpus)
+        outputfd.write(repr(bible))
