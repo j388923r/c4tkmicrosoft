@@ -11,6 +11,7 @@ if __name__ == '__main__':
     corpus = "" 
     
     for book in bible:
+        # print book.get("n")
         for chapter in book:
             for verse in chapter: 
                 corpus += verse.text + " "
