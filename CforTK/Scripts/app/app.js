@@ -12,6 +12,10 @@
         
     ]);
 
+    app.factory('breadCrumbFactory', function () {
+
+    });
+
     app.config(function ($routeProvider, $locationProvider) {
         $routeProvider
          .when('/', {

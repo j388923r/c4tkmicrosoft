@@ -2,22 +2,39 @@
 using CforTK.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace CforTK.Controllers
 {
     public class NextController : ApiController
     {
-        // GET api/next
-        public IEnumerable<string> Get()
+        CloudStorageAccount storageAccount;
+        CloudBlobClient blobClient;
+        CloudBlobContainer container;
+
+        public NextController()
         {
-            return new string[] { "value1", "value2" };
+            storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=c4tk;AccountKey=61vOUO5m1BXi1RsWNCxD/YrlTzq/imAsr65doK4iTL5sey33DErbJsiUIxP6TfYPhpP8N2KIIakqUPzLlK/WHQ==");
+            blobClient = storageAccount.CreateCloudBlobClient();
+            container = blobClient.GetContainerReference("c4tk-container");
+        }
+
+        // GET api/next
+        public JToken Get()
+        {
+            string blobName = "bibleBooks";
+            CloudBlockBlob blob = container.GetBlockBlobReference(blobName);
+            string a = blob.DownloadText();
+            JToken json = JObject.Parse(a);
+            return json;
         }
 
         // GET api/next/5
@@ -26,18 +43,10 @@ namespace CforTK.Controllers
             return "value";
         }
 
-        // POST api/next
-        public void Post([FromBody]string value)
-        {
-        }
-
         // PUT api/next/5
         public int Put(int id, [FromBody]Text value)
         {
             bool[] hasRead = new bool[1189];
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=c4tk;AccountKey=61vOUO5m1BXi1RsWNCxD/YrlTzq/imAsr65doK4iTL5sey33DErbJsiUIxP6TfYPhpP8N2KIIakqUPzLlK/WHQ==");
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference("c4tk-container");
             string blobName = "user/j388923r";
             CloudBlockBlob blob = container.GetBlockBlobReference(blobName);
 
