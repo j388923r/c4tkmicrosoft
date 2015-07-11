@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Random;
 using Newtonsoft.Json;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage;
@@ -13,6 +12,8 @@ namespace BibleAppLibrary
 {
     public class BackEnd
     {
+        static List<string[]> H;
+
         /*
          * 1. Somehow passed a bible chapter
          * 2. Take chapter index, find topic indices of five largest values in that column
@@ -24,14 +25,14 @@ namespace BibleAppLibrary
          * 7. Once a book is found that has not been read, return it.
          * 8. Load that chapter.
          * */
-        public int GetBibleBookIndex(int indexPassed, bool[] hasRead)
+        public static int GetBibleBookIndex(int indexPassed, bool[] hasRead)
         {
             // First check to see indexPassed is valid
             if (indexPassed < 0 || indexPassed > 1188)
                 throw new IndexOutOfRangeException("Index passed in not a bible chapter number");
 
             // Get H Matrix From Blob Storage
-            List<string[]> H = GetH();
+            List<string[]> H = BackEnd.H;
 
             // Get Indices of largest value topics
             Tuple<int[], double[]> tuple = GetTopFiveTopics(H, indexPassed);
@@ -57,8 +58,7 @@ namespace BibleAppLibrary
 
         #region Util
 
-        private List<string[]> GetH()
-        {
+        static BackEnd() {
             // ==== Retrieve H matrix ====
             // Connect to the blob
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=c4tk;AccountKey=61vOUO5m1BXi1RsWNCxD/YrlTzq/imAsr65doK4iTL5sey33DErbJsiUIxP6TfYPhpP8N2KIIakqUPzLlK/WHQ==");
@@ -77,10 +77,10 @@ namespace BibleAppLibrary
             List<string[]> H = JsonConvert.DeserializeObject<List<string[]>>(data);
             // ==== Got H Marix ====
 
-            return H;
+            BackEnd.H = H;
         }
 
-        private Tuple<int[],double[]> GetTopFiveTopics(List<string[]> H, int index)
+        private static Tuple<int[],double[]> GetTopFiveTopics(List<string[]> H, int index)
         {
             int[] indices = new int[5];
             double[] values = new double[5];
@@ -109,7 +109,7 @@ namespace BibleAppLibrary
             return new Tuple<int[], double[]>(indices, values);
         }
 
-        private double[] WeightIndices(double[] weights)
+        private static double[] WeightIndices(double[] weights)
         {
             double sum = 0;
             foreach (double weight in weights)
@@ -124,7 +124,7 @@ namespace BibleAppLibrary
             return weights;
         }
 
-        private int FlipBiasedCoin(double[] probabilities)
+        private static int FlipBiasedCoin(double[] probabilities)
         {
             double ceil1 = probabilities[0];
             double ceil2 = probabilities[1];
@@ -147,13 +147,13 @@ namespace BibleAppLibrary
 
         }
 
-        private Tuple<int[], double[]> GetTopFiveBooks(List<string[]> H, int index, bool[] hasRead)
+        private static Tuple<int[], double[]> GetTopFiveBooks(List<string[]> H, int index, bool[] hasRead)
         {
             int[] indices = new int[5];
             double[] values = new double[5];
 
             string[] topic = H[index];
-            for (int j = 0; j < topic.Length; ++j)
+            for (int j = 0; j < topic.Length - 1; ++j)
             {
                 double value = double.Parse(topic[j]);
                 double smallest = int.MaxValue;

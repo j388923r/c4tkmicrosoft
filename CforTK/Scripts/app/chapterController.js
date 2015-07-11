@@ -19,6 +19,14 @@
             console.log(err);
         })
 
+        $scope.previous = function () {
+
+        }
+
+        $scope.next = function () {
+
+        }
+
         activate();
 
         function activate() { }
