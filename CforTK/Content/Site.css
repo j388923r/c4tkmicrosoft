@@ -98,6 +98,11 @@ h5, h6 {
     max-width: 960px;
 }
 
+.mainView {
+    background-image: url('/Images/heaven.jfif');
+    background-repeat: no-repeat;
+}
+
 #body {
     background-color: #efeeef;
     clear: both;

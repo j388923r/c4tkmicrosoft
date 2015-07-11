@@ -18,6 +18,17 @@ namespace CforTK
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/angular").Include(
+                        "~/Scripts/angular.js",
+                        "~/Scripts/angular-route.js",
+                        "~/Scripts/angular-animate.js",
+                        "~/Scripts/angular-cookies.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/myangular").Include(
+                        "~/Scripts/app/app.js",
+                        "~/Scripts/app/homeController.js",
+                        "~/Scripts/app/chapterController.js"));
+
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
