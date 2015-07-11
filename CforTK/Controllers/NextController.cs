@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
@@ -38,9 +39,12 @@ namespace CforTK.Controllers
         }
 
         // GET api/next/5
-        public string Get(int id)
+        public async Task<string> Get(string id)
         {
-            return "value";
+            HttpClient client = new HttpClient();
+            HttpResponseMessage message = await client.GetAsync("http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=" + id.Replace('q', '+'));
+            string value = await message.Content.ReadAsStringAsync();
+            return value;
         }
 
         // PUT api/next/5

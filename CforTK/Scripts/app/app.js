@@ -4,22 +4,31 @@
     var app = angular.module('app', [
         // Angular modules 
         'ngAnimate',
-        'ngRoute'
+        'ngRoute',
 
         // Custom modules 
 
         // 3rd Party Modules
-        
+        'autocomplete'
     ]);
 
-    app.factory('breadCrumbFactory', function () {
-
+    app.directive('autoComplete', function($timeout) {
+        return function(scope, iElement, iAttrs) {
+            iElement.autocomplete({
+                source: scope[iAttrs.uiItems],
+                select: function() {
+                    $timeout(function() {
+                        iElement.trigger('input');
+                    }, 0);
+                }
+            });
+        };
     });
 
     app.config(function ($routeProvider, $locationProvider) {
         $routeProvider
          .when('/', {
-             templateUrl: '/Content/AngularViews/index.html',
+             templateUrl: '/Content/AngularViews/index1.html',
              controller: 'homeController'
          })
         .when('/Book/:bookId/Chapter/:chapter', {

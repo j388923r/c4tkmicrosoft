@@ -12,9 +12,10 @@
 
         $scope.bookName = $routeParams.bookId;
         $scope.chapter = $routeParams.chapter;
-        
-        $http.get("http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=" + $routeParams.bookId + '+' + $routeParams.chapter).success(function (data) {
-            console.log(data);
+
+        $http.get("/api/next/" + $routeParams.bookId + "q" + $routeParams.chapter).success(function (data) {
+            //console.log(data);
+            $('#passageText').html(data);
         }).error(function (err) {
             console.log(err);
         });
@@ -25,7 +26,8 @@
             for (var key in data) {
                 if (key === $scope.bookName) {
                     console.log(key);
-                    $scope.currentIndex = data[key] + $scope.chapter;
+                    $scope.currentIndex = Number(data[key]) + Number($scope.chapter);
+                    console.log($scope.currentIndex);
                 }
             }
         }).error(function (err) {
@@ -38,8 +40,8 @@
 
         $scope.next = function () {
             var nextIndex = Math.round(Math.random()*1189);
-            $http.get('/api/next/' + $scope.currentIndex, { value: "101010100101010101010101010101010101" }).success(function (data) {
-                console.log(data);
+            $http.put('/api/next/' + $scope.currentIndex, { value: "101010100101010101010101010101010101" }).success(function (data) {
+                console.log("data", data);
                 var nextIndex = data;
             }).then(function () {
                 $scope.bestmatch = ["Genesis", 0];
@@ -48,7 +50,6 @@
                         $scope.bestmatch = [key, $scope.biblebooknumbers[key]];
                     }
                 }
-                console.log($scope.bestmatch[0]);
                 $location.url('/Book/' + $scope.bestmatch[0] + '/Chapter/' + (nextIndex - $scope.bestmatch[1]));
             })
         }
