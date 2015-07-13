@@ -62,4 +62,5 @@ if __name__ == '__main__':
             h_output.write(str(element) + ",")
         h_output.write("\n")
     h_output.close()
-        
+    print(W.shape)
+    print(H.shape)        
