@@ -2,6 +2,7 @@
 A collective effort by four summer interns at Microsoft (2015) to create an intelligent passage-suggesting bible.
 
 ### Ideas for Future Functionality
+* Extra arrow for someone wishing to simply to go the previous or subsequent chapter.
 
 * Search bar on homepage, rather than simple chapter selection.
 
