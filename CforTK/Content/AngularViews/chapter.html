@@ -1,7 +1,12 @@
 ﻿<div>
-    <span class="glyphicon glyphicon-chevron-left" ng-click="previous()" style="left:0; position:fixed;"></span>
-    <span class="glyphicon glyphicon-chevron-right" ng-click="next()" style="right:0; position:fixed;"></span>
     <center>
-        <div id="passageText"></div>
+        <input auto-complete ui-items="bookList" type="text" ng-model="book" class="form-control" placeholder="Book">
+        <input type="text" ng-model="chapter" class="form-control" placeholder="Chapter">
+        <button ng-click="loadChapter(book, chapter)" type="submit">Start A New Journey</button>
     </center>
+    <div style="padding-top: 5%">
+        <span class="glyphicon glyphicon-chevron-left" ng-click="previous()" style="left:0; position:fixed;"></span>
+        <span class="glyphicon glyphicon-chevron-right" ng-click="next()" style="right:0; position:fixed;"></span>
+        <div id="passageText"></div>
+    </div>
 </div>

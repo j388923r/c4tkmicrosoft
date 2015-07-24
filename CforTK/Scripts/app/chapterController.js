@@ -5,13 +5,20 @@
         .module('app')
         .controller('chapterController', chapterController);
 
-    chapterController.$inject = ['$scope', '$http', '$routeParams', '$location']; 
+    chapterController.$inject = ['$scope', '$http', '$routeParams', '$location', '$cookies', 'breadCrumbFactory']; 
 
-    function chapterController($scope, $http, $routeParams, $location) {
+    function chapterController($scope, $http, $routeParams, $location, $cookies, breadCrumbFactory) {
         $scope.title = 'chapterController';
 
         $scope.bookName = $routeParams.bookId;
         $scope.chapter = $routeParams.chapter;
+
+        if (!$cookies.readHistory) {
+            var array = new Array(1189);
+            $cookies.readHistory = array.join("0");
+            console.log("creatingReadHistory");
+        }
+        //console.log($cookies.readHistory);
 
         $http.get("/api/next/" + $routeParams.bookId + "q" + $routeParams.chapter).success(function (data) {
             //console.log(data);
@@ -22,12 +29,13 @@
 
         $http.get('/api/next/').success(function (data) {
             $scope.biblebooknumbers = data;
-            console.log(data);
+            //console.log(data);
             for (var key in data) {
-                if (key === $scope.bookName) {
-                    console.log(key);
+                if (insensitiveEquals(key, $scope.bookName)) {
                     $scope.currentIndex = Number(data[key]) + Number($scope.chapter);
                     console.log($scope.currentIndex);
+                    $cookies.readHistory = $cookies.readHistory.substring(0, $scope.currentIndex) + '1' + $cookies.readHistory.substring($scope.currentIndex+1);
+                    //console.log($cookies.readHistory);
                 }
             }
         }).error(function (err) {
@@ -35,14 +43,22 @@
         });
 
         $scope.previous = function () {
-
+            var crumb = breadCrumbFactory.pickupCrumb()[0];
+            console.log(crumb);
+            $location.url('/Book/' + crumb['book'] + '/Chapter/' + crumb['chapter']);
         }
 
         $scope.next = function () {
             var nextIndex = Math.round(Math.random()*1189);
-            $http.put('/api/next/' + $scope.currentIndex, { value: "101010100101010101010101010101010101" }).success(function (data) {
+            $http.put('/api/next/' + $scope.currentIndex, { value: $cookies.readHistory }).success(function (data) {
                 console.log("data", data);
-                var nextIndex = data;
+                if (data > 0) {
+                    nextIndex = data;
+                    if ($scope.currentIndex <= nextIndex)
+                        nextIndex++;
+                }
+                if(nextIndex === $scope.currentIndex)
+                    nextIndex = Math.round(Math.random() * 1189) + 1;
             }).then(function () {
                 $scope.bestmatch = ["Genesis", 0];
                 for (var key in $scope.biblebooknumbers) {
@@ -50,6 +66,7 @@
                         $scope.bestmatch = [key, $scope.biblebooknumbers[key]];
                     }
                 }
+                breadCrumbFactory.leaveCrumb($scope.bookName, $scope.chapter);
                 $location.url('/Book/' + $scope.bestmatch[0] + '/Chapter/' + (nextIndex - $scope.bestmatch[1]));
             })
         }
@@ -57,5 +74,9 @@
         activate();
 
         function activate() { }
+    }
+
+    var insensitiveEquals = function (first, second) {
+        return first.toLowerCase() === second.toLowerCase();
     }
 })();

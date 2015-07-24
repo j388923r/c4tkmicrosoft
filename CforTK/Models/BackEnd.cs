@@ -12,7 +12,7 @@ namespace BibleAppLibrary
 {
     public class BackEnd
     {
-        static List<string[]> H;
+        public static List<string[]> H;
 
         /*
          * 1. Somehow passed a bible chapter
@@ -34,27 +34,38 @@ namespace BibleAppLibrary
             // Get H Matrix From Blob Storage
             List<string[]> H = BackEnd.H;
 
+            hasRead[indexPassed] = true;
+            int k = 10;
+
             // Get Indices of largest value topics
-            Tuple<int[], double[]> tuple = GetTopFiveTopics(H, indexPassed);
+            Tuple<int[], double[]> tuple = GetTopKTopics(H, indexPassed, k);
 
-            // Weight the indices
-            double[] probabilities = WeightIndices(tuple.Item2);
+            double[,] columnVectors = GetTopicsFromIndexArray(H, tuple.Item1, k, hasRead);
 
-            // Return the topic 
-            int topicIndex = tuple.Item1[FlipBiasedCoin(probabilities)];
+            int tempIndex = GetClosestVectorsIndex(columnVectors, tuple.Item2);
 
-            // Get indices of largest valued books
-            Tuple<int[], double[]> tuple2 = GetTopFiveBooks(H, topicIndex, hasRead);
+            return tempIndex;
+            /*
+        // Weight the indices
+        double[] probabilities = WeightIndices(tuple.Item2);
 
-            // Weight the indices
-            probabilities = WeightIndices(tuple2.Item2);
+        // Return the topic 
+        int topicIndex = tuple.Item1[FlipBiasedCoin(probabilities)];
 
-            int tempIndex = FlipBiasedCoin(probabilities);
+        // Get indices of largest valued books
+        Tuple<int[], double[]> tuple2 = GetTopBooks(H, topicIndex, k, hasRead);
 
-            // Get book index
-            return tuple.Item1[tempIndex];
+        // Weight the indices
+        probabilities = WeightIndices(tuple2.Item2);
 
+        int tempIndex = FlipBiasedCoin(probabilities);
+                
+        // Get book index
+        return tuple.Item1[tempIndex];
+        */
         }
+
+
 
         #region Util
 
@@ -74,23 +85,24 @@ namespace BibleAppLibrary
                 data = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
             }
 
-            List<string[]> H = JsonConvert.DeserializeObject<List<string[]>>(data);
+            BackEnd.H = JsonConvert.DeserializeObject<List<string[]>>(data);
             // ==== Got H Marix ====
-
-            BackEnd.H = H;
         }
 
-        private static Tuple<int[],double[]> GetTopFiveTopics(List<string[]> H, int index)
+        private static Tuple<int[], double[]> GetTopKTopics(List<string[]> H, int index, int k)
         {
-            int[] indices = new int[5];
-            double[] values = new double[5];
+            int[] indices = new int[k];
+            double[] values = new double[k];
 
             double value;
+
             foreach (string[] topic in H)
             {
                 value = double.Parse(topic[index]);
+
+                // Find the smallest value in arrays at present
                 double smallest = int.MaxValue;
-                int smallestIndex = 6;
+                int smallestIndex = int.MaxValue;
                 for (int i = 0; i < indices.Length; ++i)
                 {
                     if (smallest > values[i])
@@ -99,6 +111,8 @@ namespace BibleAppLibrary
                         smallestIndex = i;
                     }
                 }
+
+                // Replace smallest value with bigger one if applicable
                 if (value > smallest)
                 {
                     values[smallestIndex] = value;
@@ -109,6 +123,71 @@ namespace BibleAppLibrary
             return new Tuple<int[], double[]>(indices, values);
         }
 
+        private static double GetSquaredEuclideanDistance(double[] one, double[] two)
+        {
+            double distance_squared = 0;
+            double diff;
+            for (int i = 0; i < one.Length; ++i)
+            {
+                diff = Math.Pow(one[i] - two[i], 2);
+                distance_squared += diff;
+            }
+
+            return distance_squared;
+        }
+
+        private static double[,] GetTopicsFromIndexArray(List<string[]> H, int[] indices, int k_value, bool[] hasRead)
+        {
+            string[] tempTopic = H[0];
+            int length = tempTopic.Length;
+            int count = 0;
+            for (int k = 0; k < hasRead.Length; ++k)
+                if (hasRead[k]) ++count;
+
+            double[,] chapterTopicColumnVectors = new double[k_value, length - count];
+            int indexIter = 0;
+            for (int i = 0; i < H.Count; ++i)
+            {
+                if (!hasRead[i])
+                {
+                    tempTopic = H[i];
+                    for (int j = 0; j < indices.Length; ++j)
+                    {
+                        chapterTopicColumnVectors[j, indexIter++] = double.Parse(tempTopic[j]);
+                    }
+                }
+            }
+
+            return chapterTopicColumnVectors;
+        }
+
+        private static int GetClosestVectorsIndex(double[,] columnVectors, double[] values)
+        {
+            int bestIndex = int.MaxValue;
+            double smallestDistance = double.MaxValue;
+            double tempDist = double.MaxValue;
+            double[] temp = new double[values.Length];
+            for (int i = 0; i <= columnVectors.GetUpperBound(1); ++i)
+            {
+                for (int j = 0; j < values.Length; ++j)
+                {
+                    temp[j] = columnVectors[j, i];
+                }
+                tempDist = GetSquaredEuclideanDistance(values, temp);
+                if (smallestDistance > tempDist)
+                {
+                    smallestDistance = tempDist;
+                    bestIndex = i+1;
+                }
+            }
+
+            return bestIndex;
+        }
+
+        #endregion
+
+        #region Deprecated
+
         private static double[] WeightIndices(double[] weights)
         {
             double sum = 0;
@@ -116,7 +195,7 @@ namespace BibleAppLibrary
             {
                 sum += weight;
             }
-            for(int i = 0; i < weights.Length; ++i)
+            for (int i = 0; i < weights.Length; ++i)
             {
                 weights[i] = weights[i] / sum;
             }
@@ -147,17 +226,17 @@ namespace BibleAppLibrary
 
         }
 
-        private static Tuple<int[], double[]> GetTopFiveBooks(List<string[]> H, int index, bool[] hasRead)
+        private static Tuple<int[], double[]> GetTopBooks(List<string[]> H, int index, int k, bool[] hasRead)
         {
-            int[] indices = new int[5];
-            double[] values = new double[5];
+            int[] indices = new int[k];
+            double[] values = new double[k];
 
             string[] topic = H[index];
-            for (int j = 0; j < topic.Length - 1; ++j)
+            for (int j = 0; j < topic.Length; ++j)
             {
                 double value = double.Parse(topic[j]);
                 double smallest = int.MaxValue;
-                int smallestIndex = 6;
+                int smallestIndex = int.MaxValue;
                 for (int i = 0; i < indices.Length; ++i)
                 {
                     if (smallest > values[i])
@@ -178,7 +257,6 @@ namespace BibleAppLibrary
 
             return new Tuple<int[], double[]>(indices, values);
         }
-
         #endregion
     }
 }
