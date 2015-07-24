@@ -1,12 +1,17 @@
-﻿<div>
-    <center>
-        <input auto-complete ui-items="bookList" type="text" ng-model="book" class="form-control" placeholder="Book">
-        <input type="text" ng-model="chapter" class="form-control" placeholder="Chapter">
-        <button ng-click="loadChapter(book, chapter)" type="submit">Start A New Journey</button>
-    </center>
-    <div style="padding-top: 5%">
-        <span class="glyphicon glyphicon-chevron-left" ng-click="previous()" style="left:0; position:fixed;"></span>
-        <span class="glyphicon glyphicon-chevron-right" ng-click="next()" style="right:0; position:fixed;"></span>
+﻿<div style="padding-bottom: 2.5%">
+    <div style="padding-top: 0%">
+        <span class="glyphicon glyphicon-chevron-left" ng-click="previous()" style="left:1.5%; position:fixed;"></span>
+        <span class="glyphicon glyphicon-chevron-right" ng-click="next()" style="right:1.5%; position:fixed;"></span>
         <div id="passageText"></div>
     </div>
+    <center>
+        <div id="newjourney">
+            <a ng-click="slideUp()" href="">Would you like to start a Brand New Journey?</a>
+        </div>
+        <div id="search" style="display:none">
+            <input auto-complete ui-items="bookList" type="text" ng-model="book" class="form-control" placeholder="Book">
+            <input type="text" ng-model="nextchapter" class="form-control" placeholder="Chapter">
+            <button ng-click="loadChapter(book, nextchapter)" type="submit">Start A New Journey</button>
+        </div>
+    </center>
 </div>

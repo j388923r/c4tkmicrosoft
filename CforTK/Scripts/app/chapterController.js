@@ -9,6 +9,7 @@
 
     function chapterController($scope, $http, $routeParams, $location, $cookies, breadCrumbFactory) {
         $scope.title = 'chapterController';
+        $scope.showInput = false;
 
         $scope.bookName = $routeParams.bookId;
         $scope.chapter = $routeParams.chapter;
@@ -69,6 +70,16 @@
                 breadCrumbFactory.leaveCrumb($scope.bookName, $scope.chapter);
                 $location.url('/Book/' + $scope.bestmatch[0] + '/Chapter/' + (nextIndex - $scope.bestmatch[1]));
             })
+        }
+
+        $scope.slideUp = function () {
+            $('#newjourney').slideUp('slow');
+            $('#search').slideDown('slow');
+        }
+
+        $scope.loadChapter = function (book, chapter) {
+            console.log(book, chapter);
+            $location.url('/Book/' + book + '/Chapter/' + chapter);
         }
 
         activate();

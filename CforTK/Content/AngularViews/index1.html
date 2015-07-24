@@ -1,0 +1,16 @@
+﻿<!-- Header -->
+<header id="header">
+	<h1><em>DIDASKALOS</em></h1>
+	<p>“Good Teacher, what must I do to inherit eternal life?”<br/> 
+		Type in a book and chapter number to start.</p>
+</header>
+
+<!-- Signup Form -->
+<form id="signup-form" method="post" action="#">
+    <input auto-complete ui-items="bookList" type="text" ng-model="book" class="form-control" placeholder="Book">
+    <input auto-complete ui-items="[1, 2]" type="text" ng-model="chapter" class="form-control" placeholder="Chapter">
+    <button ng-click="loadChapter(book, chapter)" type="submit">Start</button>
+</form>
+
+<!-- Scripts -->
+<script src="/assets/js/main.js"></script>

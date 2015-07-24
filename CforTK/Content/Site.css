@@ -1,9 +1,4 @@
-﻿/*.mainView {
-    background-image: url('/Images/heaven.jpg');
-    background-repeat: no-repeat;
-}*/
-
-.glyphicon:hover {
+﻿.glyphicon:hover {
     background-color: lightslategray;
 }
 
@@ -29,6 +24,11 @@ ul.ui-autocomplete {
   #passageText {
     text-align:center; 
   }
+
+  center input[type="text"] {
+    width: 18em;
+    display:block;
+}
 }
 
 @media (min-width: 601px) {
@@ -36,5 +36,14 @@ ul.ui-autocomplete {
     text-justify:left; 
     width: 60%; 
     margin-left:20%;
+  }
+
+  center input[type="text"] {
+    width: 18em;
+    display:inline;
+  }
+
+  center button {
+      width: 18em;
   }
 }
