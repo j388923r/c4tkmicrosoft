@@ -33,7 +33,6 @@ ul.ui-autocomplete {
 
 @media (min-width: 601px) {
   #passageText {
-    text-justify:left; 
     width: 60%; 
     margin-left:20%;
   }

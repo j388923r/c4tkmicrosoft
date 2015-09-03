@@ -327,6 +327,7 @@
     <Content Include="assets\sass\libs\_skel.scss" />
     <Content Include="assets\sass\libs\_vars.scss" />
     <Content Include="assets\sass\main.scss" />
+    <Content Include="App_Data\biblesections.json" />
     <None Include="Properties\PublishProfiles\biblediscovery.pubxml" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />

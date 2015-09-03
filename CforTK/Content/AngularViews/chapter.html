@@ -2,16 +2,19 @@
     <div style="padding-top: 0%">
         <span class="glyphicon glyphicon-chevron-left" ng-click="previous()" style="left:1.5%; position:fixed;"></span>
         <span class="glyphicon glyphicon-chevron-right" ng-click="next()" style="right:1.5%; position:fixed;"></span>
+        <div id="hackyfix"></div>
         <div id="passageText"></div>
     </div>
+    <button class="pull-left" ng-click="previousChapter()">Previous Chapter</button>
+    <button class="pull-right" ng-click="nextChapter()">Next Chapter</button>
     <center>
         <div id="newjourney">
             <a ng-click="slideUp()" href="">Would you like to start a Brand New Journey?</a>
         </div>
         <div id="search" style="display:none">
-            <input auto-complete ui-items="bookList" type="text" ng-model="book" class="form-control" placeholder="Book">
+            <input auto-complete ui-items="bookList" type="text" ng-model="nextbook" class="form-control" placeholder="Book">
             <input type="text" ng-model="nextchapter" class="form-control" placeholder="Chapter">
-            <button ng-click="loadChapter(book, nextchapter)" type="submit">Start A New Journey</button>
+            <button ng-click="loadChapter(nextbook, nextchapter)" type="submit">Start A New Journey</button>
         </div>
     </center>
 </div>

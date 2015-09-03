@@ -19,7 +19,6 @@
             $cookies.readHistory = array.join("0");
             console.log("creatingReadHistory");
         }
-        //console.log($cookies.readHistory);
 
         $http.get("/api/next/" + $routeParams.bookId + "q" + $routeParams.chapter).success(function (data) {
             //console.log(data);
@@ -36,7 +35,7 @@
                     $scope.currentIndex = Number(data[key]) + Number($scope.chapter);
                     console.log($scope.currentIndex);
                     $cookies.readHistory = $cookies.readHistory.substring(0, $scope.currentIndex) + '1' + $cookies.readHistory.substring($scope.currentIndex+1);
-                    //console.log($cookies.readHistory);
+                    
                 }
             }
         }).error(function (err) {
@@ -80,6 +79,14 @@
         $scope.loadChapter = function (book, chapter) {
             console.log(book, chapter);
             $location.url('/Book/' + book + '/Chapter/' + chapter);
+        }
+
+        $scope.nextChapter = function () {
+            $location.url('/Book/' + $scope.bookName + '/Chapter/' + (Number($scope.chapter) + 1));
+        }
+
+        $scope.previousChapter = function () {
+            $location.url('/Book/' + $scope.bookName + '/Chapter/' + (Number($scope.chapter) - 1));
         }
 
         activate();
